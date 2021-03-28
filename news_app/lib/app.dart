@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
         title: 'news_app',
         debugShowCheckedModeBanner: false,
         theme: ThemeData.dark(),
-        home: NewsScreen(title: 'News'),
+        home: NewsScreen(),
       ),
     );
   }
