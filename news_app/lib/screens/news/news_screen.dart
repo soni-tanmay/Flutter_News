@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,10 +14,43 @@ class NewsScreen extends StatefulWidget {
   _NewsScreenState createState() => _NewsScreenState();
 }
 
-class _NewsScreenState extends State<NewsScreen> {
+class _NewsScreenState extends State<NewsScreen> with WidgetsBindingObserver {
   NewsBloc newsBloc = NewsBloc();
   TextEditingController textController = TextEditingController();
   bool autoRefresh = false;
+  Timer timer;
+  AppLifecycleState appLifecycleState;
+  String searchText;
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && autoRefresh == true) {
+      timer = Timer.periodic(Duration(seconds: 30), (timer) {
+        newsBloc.add(FetchHeadlinesEvent(searchText));
+      });
+    }
+    if (state == AppLifecycleState.paused) {
+      timer?.cancel();
+    }
+  }
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    if (autoRefresh) {
+      timer = Timer.periodic(Duration(seconds: 30), (timer) {
+        newsBloc.add(FetchHeadlinesEvent(searchText));
+      });
+    }
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    timer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +70,13 @@ class _NewsScreenState extends State<NewsScreen> {
                       setState(() {
                         autoRefresh = b;
                       });
+                      if (autoRefresh) {
+                        timer = Timer.periodic(Duration(seconds: 30), (timer) {
+                          newsBloc.add(FetchHeadlinesEvent(searchText));
+                        });
+                      } else {
+                        timer?.cancel();
+                      }
                     },
                   ),
                   Text('Autorefresh'),
@@ -64,7 +106,8 @@ class _NewsScreenState extends State<NewsScreen> {
             SearchBar(
               textController: textController,
               onPressed: () {
-                newsBloc.add(FetchHeadlinesEvent(textController.text));
+                searchText = textController.text;
+                newsBloc.add(FetchHeadlinesEvent(searchText));
               },
             ),
             Expanded(

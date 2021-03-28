@@ -13,6 +13,7 @@ part 'news_state.dart';
 
 class NewsBloc extends Bloc<NewsEvent, NewsState> {
   NewsRepository newsRepository;
+  String previousTopic;
   NewsBloc()
       : super(FetchHeadlinesState.empty(
             "Please search for a news in the search bar")) {
@@ -31,9 +32,11 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
 
   Stream<NewsState> fetchNewsHeadlines(FetchHeadlinesEvent event) async* {
     try {
-      yield FetchHeadlinesState.loading("");
+      if (newsRepository.data == null || previousTopic != event.topic)
+        yield FetchHeadlinesState.loading("");
       await newsRepository.getHeadlines(event.topic);
       if (newsRepository.status == Status.SUCCESS) {
+        previousTopic = event.topic;
         if (newsRepository.data.totalResults != 0) {
           yield FetchHeadlinesState.success(newsRepository.data);
         } else {
