@@ -31,6 +31,9 @@ dependencies:
   flutter_bloc: 
   http: 
   shimmer: 
+  hive:
+  hive_flutter:
+  connectivity:
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:news_app/routes/route_names.dart';
-import 'package:news_app/screens/news/news_screen.dart';
+import 'package:news_app/screens/headlines/headlines_screen.dart';
 
 class SetupRoutes {
   // Set initial route here
@@ -9,7 +9,7 @@ class SetupRoutes {
   /// Add entry for new route here
   static Map<String, WidgetBuilder> get routes {
     return {
-      Routes.NEWS_SCREEN: (context) => NewsScreen(),
+      Routes.NEWS_SCREEN: (context) => HeadlinesScreen(),
     };
   }
 

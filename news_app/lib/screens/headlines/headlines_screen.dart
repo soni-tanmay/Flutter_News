@@ -1,26 +1,28 @@
 import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/bloc/news/news_bloc.dart';
 import 'package:news_app/common_components/search_bar.dart';
+import 'package:news_app/screens/Intrest/intrest_screen.dart';
 import 'package:news_app/services/sizeconfig.dart';
 import 'package:news_app/utils/enums.dart';
 import 'package:shimmer/shimmer.dart';
 
-class NewsScreen extends StatefulWidget {
+class HeadlinesScreen extends StatefulWidget {
   @override
-  _NewsScreenState createState() => _NewsScreenState();
+  _HeadlinesScreenState createState() => _HeadlinesScreenState();
 }
 
-class _NewsScreenState extends State<NewsScreen> with WidgetsBindingObserver {
+class _HeadlinesScreenState extends State<HeadlinesScreen>
+    with WidgetsBindingObserver {
   NewsBloc newsBloc = NewsBloc();
   TextEditingController textController = TextEditingController();
   bool autoRefresh = false;
   Timer timer;
   AppLifecycleState appLifecycleState;
   String searchText;
+  bool isConnected = true;
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -57,8 +59,9 @@ class _NewsScreenState extends State<NewsScreen> with WidgetsBindingObserver {
     SizeConfig().init(context);
     return Scaffold(
         appBar: AppBar(
-          toolbarHeight: 70.toHeight,
+          toolbarHeight: 75.toHeight,
           title: Text('Headlines'),
+          centerTitle: true,
           actions: [
             Padding(
               padding: EdgeInsets.only(right: 8.0.toWidth),
@@ -93,16 +96,40 @@ class _NewsScreenState extends State<NewsScreen> with WidgetsBindingObserver {
             child: Center(
               child: InkWell(
                 child: Text(
-                  'see intrest over time',
+                  'See Intrest Over Time',
                   style: TextStyle(color: Colors.tealAccent),
                 ),
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (BuildContext context) => IntrestScreen()));
+                },
               ),
             ),
           ),
         ),
         body: Column(
           children: [
+            BlocListener(
+              cubit: newsBloc,
+              listener: (context, state) {
+                if (state is FetchHeadlinesState) {
+                  setState(() {
+                    isConnected = newsBloc.isConnected;
+                  });
+                }
+              },
+              child: isConnected
+                  ? SizedBox()
+                  : Container(
+                      padding: EdgeInsets.symmetric(vertical: 10.toHeight),
+                      width: SizeConfig().screenWidth,
+                      color: Colors.red,
+                      child: Text(
+                        'Connection Lost !\n Displaying Last Fetched Headlines.',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+            ),
             SearchBar(
               textController: textController,
               onPressed: () {
@@ -123,14 +150,14 @@ class _NewsScreenState extends State<NewsScreen> with WidgetsBindingObserver {
                         return Card(
                             child: Container(
                                 padding: EdgeInsets.only(right: 8.toWidth),
-                                height: 100.toHeight,
+                                height: 120.toHeight,
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Image.network(
                                       state.data.articles[index].urlToImage,
-                                      width: 100.toWidth,
-                                      height: 100.toHeight,
+                                      width: 120.toWidth,
+                                      height: 120.toHeight,
                                       fit: BoxFit.cover,
                                     ),
                                     SizedBox(

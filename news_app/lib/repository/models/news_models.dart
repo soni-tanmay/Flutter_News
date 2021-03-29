@@ -3,7 +3,7 @@ class News {
   int totalResults;
   List<Article> articles;
   News({this.status, this.totalResults, this.articles});
-  News.fromJson(Map<String, dynamic> json) {
+  News.fromJson(json) {
     status = json['status'];
     totalResults = json['totalResults'];
     if (json['articles'] != null) {
@@ -42,7 +42,7 @@ class Article {
       this.urlToImage,
       this.publishedAt,
       this.content});
-  Article.fromJson(Map<String, dynamic> json) {
+  Article.fromJson(json) {
     source =
         json['source'] != null ? new Source.fromJson(json['source']) : null;
     author = json['author'];
@@ -73,7 +73,7 @@ class Source {
   String id;
   String name;
   Source({this.id, this.name});
-  Source.fromJson(Map<String, dynamic> json) {
+  Source.fromJson(json) {
     id = json['id'];
     name = json['name'];
   }
