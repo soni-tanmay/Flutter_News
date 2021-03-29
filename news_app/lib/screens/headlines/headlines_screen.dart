@@ -108,7 +108,7 @@ class _HeadlinesScreenState extends State<HeadlinesScreen>
                           builder: (BuildContext context) => IntrestScreen(
                                 textController: textController,
                               )));
-                  if (searchText != null) {
+                  if (searchText != null && searchText != '') {
                     headlinesBloc.add(FetchHeadlinesEvent(searchText));
                   }
                 },
