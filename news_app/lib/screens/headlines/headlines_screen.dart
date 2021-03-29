@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:news_app/bloc/news/news_bloc.dart';
+import 'package:news_app/bloc/headlines/headlines_bloc.dart';
 import 'package:news_app/common_components/search_bar.dart';
 import 'package:news_app/screens/Intrest/intrest_screen.dart';
 import 'package:news_app/services/sizeconfig.dart';
@@ -16,7 +16,7 @@ class HeadlinesScreen extends StatefulWidget {
 
 class _HeadlinesScreenState extends State<HeadlinesScreen>
     with WidgetsBindingObserver {
-  NewsBloc newsBloc = NewsBloc();
+  HeadlinesBloc headlinesBloc = HeadlinesBloc();
   TextEditingController textController = TextEditingController();
   bool autoRefresh = false;
   Timer timer;
@@ -28,7 +28,8 @@ class _HeadlinesScreenState extends State<HeadlinesScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed && autoRefresh == true) {
       timer = Timer.periodic(Duration(seconds: 30), (timer) {
-        newsBloc.add(FetchHeadlinesEvent(searchText));
+        if (searchText.isNotEmpty)
+          headlinesBloc.add(FetchHeadlinesEvent(searchText));
       });
     }
     if (state == AppLifecycleState.paused) {
@@ -41,7 +42,8 @@ class _HeadlinesScreenState extends State<HeadlinesScreen>
     WidgetsBinding.instance.addObserver(this);
     if (autoRefresh) {
       timer = Timer.periodic(Duration(seconds: 30), (timer) {
-        newsBloc.add(FetchHeadlinesEvent(searchText));
+        if (searchText.isNotEmpty)
+          headlinesBloc.add(FetchHeadlinesEvent(searchText));
       });
     }
     super.initState();
@@ -75,7 +77,8 @@ class _HeadlinesScreenState extends State<HeadlinesScreen>
                       });
                       if (autoRefresh) {
                         timer = Timer.periodic(Duration(seconds: 30), (timer) {
-                          newsBloc.add(FetchHeadlinesEvent(searchText));
+                          if (searchText.isNotEmpty)
+                            headlinesBloc.add(FetchHeadlinesEvent(searchText));
                         });
                       } else {
                         timer?.cancel();
@@ -99,9 +102,15 @@ class _HeadlinesScreenState extends State<HeadlinesScreen>
                   'See Intrest Over Time',
                   style: TextStyle(color: Colors.tealAccent),
                 ),
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (BuildContext context) => IntrestScreen()));
+                onTap: () async {
+                  var searchText =
+                      await Navigator.of(context).push(MaterialPageRoute(
+                          builder: (BuildContext context) => IntrestScreen(
+                                textController: textController,
+                              )));
+                  if (searchText != null) {
+                    headlinesBloc.add(FetchHeadlinesEvent(searchText));
+                  }
                 },
               ),
             ),
@@ -110,11 +119,11 @@ class _HeadlinesScreenState extends State<HeadlinesScreen>
         body: Column(
           children: [
             BlocListener(
-              cubit: newsBloc,
+              cubit: headlinesBloc,
               listener: (context, state) {
                 if (state is FetchHeadlinesState) {
                   setState(() {
-                    isConnected = newsBloc.isConnected;
+                    isConnected = headlinesBloc.isConnected;
                   });
                 }
               },
@@ -134,12 +143,13 @@ class _HeadlinesScreenState extends State<HeadlinesScreen>
               textController: textController,
               onPressed: () {
                 searchText = textController.text;
-                newsBloc.add(FetchHeadlinesEvent(searchText));
+                if (searchText.isNotEmpty)
+                  headlinesBloc.add(FetchHeadlinesEvent(searchText));
               },
             ),
             Expanded(
-              child: BlocBuilder<NewsBloc, NewsState>(
-                cubit: newsBloc,
+              child: BlocBuilder<HeadlinesBloc, HeadlinesState>(
+                cubit: headlinesBloc,
                 builder: (context, state) {
                   if (state.status == Status.SUCCESS) {
                     return ListView.builder(
@@ -218,7 +228,7 @@ class _HeadlinesScreenState extends State<HeadlinesScreen>
                         state.message,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: 28,
+                          fontSize: 28.toFont,
                           fontWeight: FontWeight.w200,
                           color: Colors.white,
                         ),
@@ -232,7 +242,7 @@ class _HeadlinesScreenState extends State<HeadlinesScreen>
                         state.message,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: 28,
+                          fontSize: 28.toFont,
                           fontWeight: FontWeight.w200,
                           color: Colors.white,
                         ),

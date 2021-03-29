@@ -10,26 +10,26 @@ import 'package:news_app/repository/news_repository.dart';
 import 'package:news_app/services/hive_db/hive_store.dart';
 import 'package:news_app/utils/enums.dart';
 
-part 'news_event.dart';
-part 'news_state.dart';
+part 'headlines_event.dart';
+part 'headlines_state.dart';
 
-class NewsBloc extends Bloc<NewsEvent, NewsState> {
+class HeadlinesBloc extends Bloc<HeadlinesEvent, HeadlinesState> {
   NewsRepository newsRepository;
   HiveStore hiveStore;
   String previousTopic;
   String headlinesBoxName = 'headlines';
   bool isConnected = true;
 
-  NewsBloc()
+  HeadlinesBloc()
       : super(FetchHeadlinesState.empty(
-            "Please search for a news in the search bar")) {
+            "Please search for a headlines in the search bar")) {
     newsRepository =
         NewsRepository(newsApiClient: NewsApiClient(httpClient: http.Client()));
     hiveStore = HiveStore();
   }
 
   @override
-  Stream<NewsState> mapEventToState(NewsEvent event) async* {
+  Stream<HeadlinesState> mapEventToState(HeadlinesEvent event) async* {
     switch (event.runtimeType) {
       case FetchHeadlinesEvent:
         yield* fetchNewsHeadlines(event);
@@ -37,7 +37,8 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     }
   }
 
-  Stream<NewsState> fetchNewsHeadlines(FetchHeadlinesEvent event) async* {
+  Stream<HeadlinesState> fetchNewsHeadlines(FetchHeadlinesEvent event) async* {
+    print('fetchNewsHeadlines');
     try {
       if (newsRepository.data == null || previousTopic != event.topic) {
         yield FetchHeadlinesState.loading("");

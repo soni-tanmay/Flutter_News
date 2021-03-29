@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:meta/meta.dart';
 import 'package:http/http.dart' as http;
 import 'package:news_app/repository/models/news_models.dart';
@@ -21,5 +20,18 @@ class NewsApiClient {
 
     final newsHeadlinesJson = jsonDecode(newsHeadlinesResponse.body);
     return News.fromJson(newsHeadlinesJson);
+  }
+
+  Future<News> fetchIntrests(String topic) async {
+    final newsIntrestsUrl =
+        '${Config.BASE_URL}/everything?q=$topic&apiKey=${Config.API_KEY}';
+    final newsIntrestsResponse = await this.httpClient.get(newsIntrestsUrl);
+
+    if (newsIntrestsResponse.statusCode != 200) {
+      throw Exception('error fetching intrests');
+    }
+
+    final newsIntrestsJson = jsonDecode(newsIntrestsResponse.body);
+    return News.fromJson(newsIntrestsJson);
   }
 }

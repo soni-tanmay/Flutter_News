@@ -13,9 +13,4 @@ abstract class BlocState<T> {
   const BlocState.error(this.message, {this.data}) : status = Status.ERROR;
 
   const BlocState.empty(this.message, {this.data}) : status = Status.EMPTY;
-
-  @override
-  String toString() {
-    return 'Status : $status \n Message : $message \n Data : $data';
-  }
 }

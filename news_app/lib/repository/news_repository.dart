@@ -5,6 +5,7 @@ import 'package:news_app/utils/enums.dart';
 
 abstract class AbstractNewsRepository extends GenericDataProvider<News> {
   getHeadlines(String topic);
+  getIntrests(String topic);
 }
 
 class NewsRepository extends AbstractNewsRepository {
@@ -15,6 +16,18 @@ class NewsRepository extends AbstractNewsRepository {
     try {
       status = Status.LOADING;
       data = await newsApiClient.fetchHeadlines(topic);
+      status = Status.SUCCESS;
+    } catch (error) {
+      errorMessage = error.toString();
+      status = Status.ERROR;
+    }
+  }
+
+  @override
+  getIntrests(String topic) async {
+    try {
+      status = Status.LOADING;
+      data = await newsApiClient.fetchIntrests(topic);
       status = Status.SUCCESS;
     } catch (error) {
       errorMessage = error.toString();

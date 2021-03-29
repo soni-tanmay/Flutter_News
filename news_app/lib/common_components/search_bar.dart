@@ -4,7 +4,11 @@ import 'package:news_app/services/sizeconfig.dart';
 class SearchBar extends StatelessWidget {
   final TextEditingController textController;
   final Function onPressed;
-  SearchBar({this.textController, this.onPressed});
+
+  SearchBar({
+    this.textController,
+    this.onPressed,
+  });
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -46,7 +50,7 @@ class SearchBar extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
-              onPressed: textController.text.isNotEmpty ? onPressed : () {},
+              onPressed: onPressed,
             ),
           ),
         ],
