@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,11 @@ class _IntrestScreenState extends State<IntrestScreen> {
 
   @override
   void initState() {
+    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      setState(() {
+        isConnected = (result != ConnectivityResult.none);
+      });
+    });
     textController = TextEditingController(
       text: widget.searchText,
     );
@@ -101,8 +107,10 @@ class _IntrestScreenState extends State<IntrestScreen> {
             SearchBar(
               textController: textController,
               onPressed: () {
-                widget.searchText = textController.text;
-                intrestsBloc.add(FetchIntrestsEvent(widget.searchText));
+                if (textController.text.isNotEmpty) {
+                  widget.searchText = textController.text;
+                  intrestsBloc.add(FetchIntrestsEvent(widget.searchText));
+                }
               },
             ),
             Expanded(

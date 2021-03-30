@@ -16,7 +16,6 @@ part 'headlines_state.dart';
 class HeadlinesBloc extends Bloc<HeadlinesEvent, HeadlinesState> {
   NewsRepository newsRepository;
   HiveStore hiveStore;
-  String previousTopic;
   String headlinesBoxName = 'headlines';
   bool isConnected = true;
 
@@ -38,17 +37,13 @@ class HeadlinesBloc extends Bloc<HeadlinesEvent, HeadlinesState> {
   }
 
   Stream<HeadlinesState> fetchNewsHeadlines(FetchHeadlinesEvent event) async* {
-    print('fetchNewsHeadlines');
     try {
-      if (newsRepository.data == null || previousTopic != event.topic) {
-        yield FetchHeadlinesState.loading("");
-      }
+      yield FetchHeadlinesState.loading("");
       var data = await hiveStore.readObjects(headlinesBoxName);
       isConnected = await checkConnection();
       if (isConnected) {
         await newsRepository.getHeadlines(event.topic);
         if (newsRepository.status == Status.SUCCESS) {
-          previousTopic = event.topic;
           if (newsRepository.data.totalResults != 0) {
             if (data.first != null && data.first.isNotEmpty) {
               hiveStore.updateObjects(

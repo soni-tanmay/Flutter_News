@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,6 +28,8 @@ class _HeadlinesScreenState extends State<HeadlinesScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed && autoRefresh == true) {
+      if (searchText.isNotEmpty)
+        headlinesBloc.add(FetchHeadlinesEvent(searchText));
       timer = Timer.periodic(Duration(seconds: 30), (timer) {
         if (searchText.isNotEmpty)
           headlinesBloc.add(FetchHeadlinesEvent(searchText));
@@ -40,6 +43,11 @@ class _HeadlinesScreenState extends State<HeadlinesScreen>
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
+    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      setState(() {
+        isConnected = (result != ConnectivityResult.none);
+      });
+    });
     textController = TextEditingController(text: searchText);
     headlinesBloc.add(FetchHeadlinesEvent(searchText));
     if (autoRefresh) {
@@ -111,6 +119,7 @@ class _HeadlinesScreenState extends State<HeadlinesScreen>
                                 searchText: searchText,
                               )));
                   if (searchString != null && searchString != '') {
+                    textController.text = searchString;
                     headlinesBloc.add(FetchHeadlinesEvent(searchString));
                   }
                 },
@@ -147,9 +156,10 @@ class _HeadlinesScreenState extends State<HeadlinesScreen>
             SearchBar(
               textController: textController,
               onPressed: () {
-                searchText = textController.text;
-                if (searchText.isNotEmpty)
+                if (textController.text.isNotEmpty) {
+                  searchText = textController.text;
                   headlinesBloc.add(FetchHeadlinesEvent(searchText));
+                }
               },
             ),
             Expanded(
@@ -169,12 +179,21 @@ class _HeadlinesScreenState extends State<HeadlinesScreen>
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Image.network(
-                                      state.data.articles[index].urlToImage,
-                                      width: 120.toWidth,
-                                      height: 120.toHeight,
-                                      fit: BoxFit.cover,
-                                    ),
+                                    state.data.articles[index]?.urlToImage !=
+                                            null
+                                        ? Image.network(
+                                            state.data.articles[index]
+                                                .urlToImage,
+                                            width: 120.toWidth,
+                                            height: 120.toHeight,
+                                            fit: BoxFit.cover,
+                                          )
+                                        : Image.asset(
+                                            'assets/placeholder.png',
+                                            width: 120.toWidth,
+                                            height: 120.toHeight,
+                                            fit: BoxFit.cover,
+                                          ),
                                     SizedBox(
                                       width: 20.toWidth,
                                     ),
