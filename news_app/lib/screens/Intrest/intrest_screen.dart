@@ -9,20 +9,24 @@ import 'package:news_app/utils/enums.dart';
 import 'package:shimmer/shimmer.dart';
 
 class IntrestScreen extends StatefulWidget {
-  final TextEditingController textController;
-  IntrestScreen({this.textController});
+  String searchText;
+  IntrestScreen({this.searchText});
   @override
   _IntrestScreenState createState() => _IntrestScreenState();
 }
 
 class _IntrestScreenState extends State<IntrestScreen> {
+  TextEditingController textController;
   IntrestsBloc intrestsBloc = IntrestsBloc();
   bool isConnected = true;
 
   @override
   void initState() {
-    if (widget.textController.text.isNotEmpty) {
-      intrestsBloc.add(FetchIntrestsEvent(widget.textController.text));
+    textController = TextEditingController(
+      text: widget.searchText,
+    );
+    if (widget.searchText.isNotEmpty) {
+      intrestsBloc.add(FetchIntrestsEvent(widget.searchText));
     }
     super.initState();
   }
@@ -62,7 +66,7 @@ class _IntrestScreenState extends State<IntrestScreen> {
                   style: TextStyle(color: Colors.tealAccent),
                 ),
                 onTap: () {
-                  Navigator.of(context).pop(widget.textController.text);
+                  Navigator.of(context).pop(widget.searchText);
                 },
               ),
             ),
@@ -76,6 +80,9 @@ class _IntrestScreenState extends State<IntrestScreen> {
                 if (state is FetchIntrestsState) {
                   setState(() {
                     isConnected = intrestsBloc.isConnected;
+                    if (!isConnected) {
+                      textController.text = '';
+                    }
                   });
                 }
               },
@@ -92,10 +99,10 @@ class _IntrestScreenState extends State<IntrestScreen> {
                     ),
             ),
             SearchBar(
-              textController: widget.textController,
+              textController: textController,
               onPressed: () {
-                intrestsBloc
-                    .add(FetchIntrestsEvent(widget.textController.text));
+                widget.searchText = textController.text;
+                intrestsBloc.add(FetchIntrestsEvent(widget.searchText));
               },
             ),
             Expanded(

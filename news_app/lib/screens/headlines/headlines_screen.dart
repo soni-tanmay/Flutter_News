@@ -17,11 +17,11 @@ class HeadlinesScreen extends StatefulWidget {
 class _HeadlinesScreenState extends State<HeadlinesScreen>
     with WidgetsBindingObserver {
   HeadlinesBloc headlinesBloc = HeadlinesBloc();
-  TextEditingController textController = TextEditingController();
+  TextEditingController textController;
   bool autoRefresh = false;
   Timer timer;
   AppLifecycleState appLifecycleState;
-  String searchText;
+  String searchText = 'covid';
   bool isConnected = true;
 
   @override
@@ -40,6 +40,8 @@ class _HeadlinesScreenState extends State<HeadlinesScreen>
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
+    textController = TextEditingController(text: searchText);
+    headlinesBloc.add(FetchHeadlinesEvent(searchText));
     if (autoRefresh) {
       timer = Timer.periodic(Duration(seconds: 30), (timer) {
         if (searchText.isNotEmpty)
@@ -103,13 +105,13 @@ class _HeadlinesScreenState extends State<HeadlinesScreen>
                   style: TextStyle(color: Colors.tealAccent),
                 ),
                 onTap: () async {
-                  var searchText =
+                  var searchString =
                       await Navigator.of(context).push(MaterialPageRoute(
                           builder: (BuildContext context) => IntrestScreen(
-                                textController: textController,
+                                searchText: searchText,
                               )));
-                  if (searchText != null && searchText != '') {
-                    headlinesBloc.add(FetchHeadlinesEvent(searchText));
+                  if (searchString != null && searchString != '') {
+                    headlinesBloc.add(FetchHeadlinesEvent(searchString));
                   }
                 },
               ),
@@ -124,6 +126,9 @@ class _HeadlinesScreenState extends State<HeadlinesScreen>
                 if (state is FetchHeadlinesState) {
                   setState(() {
                     isConnected = headlinesBloc.isConnected;
+                    if (!isConnected) {
+                      textController.text = '';
+                    }
                   });
                 }
               },

@@ -2,15 +2,39 @@
 
 A new Flutter project.
 
-## Getting Started
+## steps to run
+flutter clean
+flutter packages get
+flutter run
 
-This project is a starting point for a Flutter application.
+### flutter doctor -v
+Flutter (Channel stable, 1.22.6, on macOS 11.2.3 20D91 darwin-x64, locale en-IN)
+    • Flutter version 1.22.6 at /Users/tanmaysoni/Development/flutter
+    • Framework revision 9b2d32b605 (9 weeks ago), 2021-01-22 14:36:39 -0800
+    • Engine revision 2f0af37152
+    • Dart version 2.10.5
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+[✓] Android toolchain - develop for Android devices (Android SDK version 30.0.3)
+    • Android SDK at /Users/tanmaysoni/Library/Android/sdk
+    • Platform android-30, build-tools 30.0.3
+    • ANDROID_HOME = /Users/tanmaysoni/Library/Android/sdk
+    • ANDROID_SDK_ROOT = /Users/tanmaysoni/Library/Android/sdk
+    • Java binary at: /Applications/Android Studio.app/Contents/jre/jdk/Contents/Home/bin/java
+    • Java version OpenJDK Runtime Environment (build 1.8.0_242-release-1644-b3-6915495)
+    • All Android licenses accepted.
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+[✓] Xcode - develop for iOS and macOS (Xcode 12.4)
+    • Xcode at /Applications/Xcode.app/Contents/Developer
+    • Xcode 12.4, Build version 12D4e
+    • CocoaPods version 1.10.1
+
+[!] Android Studio (version 4.1)
+    • Android Studio at /Applications/Android Studio.app/Contents
+    ✗ Flutter plugin not installed; this adds Flutter specific functionality.
+    ✗ Dart plugin not installed; this adds Dart specific functionality.
+    • Java version OpenJDK Runtime Environment (build 1.8.0_242-release-1644-b3-6915495)
+
+[✓] VS Code (version 1.54.3)
+    • VS Code at /Applications/Visual Studio Code.app/Contents
+    • Flutter extension version 3.20.0
